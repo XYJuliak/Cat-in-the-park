@@ -1,5 +1,16 @@
 import OpenAI from 'openai'
-import type { GenerateInterpretationRequest } from '@/types'
+
+type CardPosition = 'upright' | 'reversed'
+
+interface GenerateInterpretationRequest {
+  cardId: string
+  deckId: string
+  spreadType: string
+  position: CardPosition
+  spreadPosition: number
+  question: string
+  guidebookMeaning: string
+}
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -24,6 +35,7 @@ export const generateInterpretation = async (
   const prompt = `You are an expert tarot reader providing insightful, mystical interpretations.
 
 Context:
+- Card ID: ${cardId}
 - Deck: ${deckId}
 - Card Position: ${positionText}
 - Spread Type: ${spreadType}
@@ -41,23 +53,18 @@ Provide a concise, mystical interpretation (2-3 sentences) that:
 
 Interpretation:`
 
-  const message = await openai.messages.create({
-    model: 'claude-3-5-sonnet-20241022',
-    max_tokens: 300,
-    messages: [
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
+  const response = await openai.responses.create({
+    model: 'gpt-4.1-mini',
+    max_output_tokens: 300,
+    input: prompt,
   })
 
-  const textBlock = message.content.find((block) => block.type === 'text')
-  if (!textBlock || textBlock.type !== 'text') {
+  const text = response.output_text?.trim()
+  if (!text) {
     throw new Error('No text response from OpenAI')
   }
 
-  return textBlock.text.trim()
+  return text
 }
 
 function getSpreadPositionContext(
@@ -65,7 +72,7 @@ function getSpreadPositionContext(
   position: number
 ): string {
   const contexts: Record<string, Record<number, string>> = {
-    'single': {
+    single: {
       1: 'The primary influence',
     },
     'three-card': {
