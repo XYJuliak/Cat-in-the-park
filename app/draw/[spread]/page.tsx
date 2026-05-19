@@ -1,19 +1,25 @@
 import { notFound } from "next/navigation";
-import DrawExperience, { SPREADS } from "../../../components/draw/DrawExperience";
+import DrawExperience from "../../../components/draw/DrawExperience";
+import { getDeckById } from "../../../lib/decks";
+import { SPREADS } from "../../../lib/spreads";
 
 type SpreadKey = keyof typeof SPREADS;
 
-export default async function SpreadDrawPage({
+export default function SpreadDrawPage({
   params,
+  searchParams,
 }: {
-  params: Promise<{ spread: string }>;
+  params: { spread: string };
+  searchParams: { deck?: string };
 }) {
-  const { spread } = await params;
+  const { spread } = params;
   const spreadConfig = SPREADS[spread as SpreadKey];
+
+  const selectedDeck = getDeckById(searchParams.deck);
 
   if (!spreadConfig) {
     notFound();
   }
 
-  return <DrawExperience spread={spreadConfig} />;
+  return <DrawExperience spread={spreadConfig} deck={selectedDeck} />;
 }

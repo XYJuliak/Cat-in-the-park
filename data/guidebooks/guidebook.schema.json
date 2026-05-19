@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cat-in-the-park.local/schemas/guidebook.schema.json",
+  "title": "Tarot Guidebook",
+  "type": "object",
+  "required": ["deckId", "deckName", "version", "cards"],
+  "properties": {
+    "deckId": { "type": "string", "minLength": 1 },
+    "deckName": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "source": { "type": "string" },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "deckId",
+          "cardId",
+          "cardName",
+          "uprightKeywords",
+          "uprightOriginalGuidebookText",
+          "reversedKeywords",
+          "reversedOriginalGuidebookText"
+        ],
+        "properties": {
+          "deckId": { "type": "string", "minLength": 1 },
+          "cardId": { "type": "string", "minLength": 1 },
+          "cardName": { "type": "string", "minLength": 1 },
+          "uprightKeywords": { "type": "array", "items": { "type": "string" } },
+          "uprightOriginalGuidebookText": { "type": "string", "minLength": 1 },
+          "reversedKeywords": { "type": "array", "items": { "type": "string" } },
+          "reversedOriginalGuidebookText": { "type": "string", "minLength": 1 },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}
