@@ -10,7 +10,6 @@ export default function SpreadDrawPage({
   searchParams,
 }: {
   params: { spread: string };
-  searchParams: { deck?: string };
 }) {
   const { spread } = params;
   const spreadConfig = SPREADS[spread as SpreadKey];
