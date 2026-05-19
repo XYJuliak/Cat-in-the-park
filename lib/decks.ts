@@ -35,25 +35,9 @@ const MAJOR_ARCANA_CARDS: TarotCard[] = [
   { id: "world", name: "The World" },
 ];
 
-export const TAROT_DECKS: TarotDeck[] = [
-  {
-    id: "mystic-arcana",
-    name: "Mystic Arcana",
-    description: "Classic major-arcana-focused deck for grounded symbolic guidance.",
-    cards: MAJOR_ARCANA_CARDS,
-  },
-  {
-    id: "starlight-visions",
-    name: "Starlight Visions",
-    description: "A luminous reinterpretation deck tuned for reflective and intuitive readings.",
-    cards: MAJOR_ARCANA_CARDS.map((card) => ({
-      id: `starlight-${card.id}`,
-      name: `${card.name} · Starlight`,
-    })),
-  },
-];
-
-export function getDeckById(deckId?: string): TarotDeck | undefined {
-  if (!deckId) return undefined;
-  return TAROT_DECKS.find((deck) => deck.id === deckId);
-}
+export const DEFAULT_DECK: TarotDeck = {
+  id: "mystic-arcana",
+  name: "Mystic Arcana",
+  description: "A calm, ceremonial deck for reflective readings.",
+  cards: MAJOR_ARCANA_CARDS,
+};
