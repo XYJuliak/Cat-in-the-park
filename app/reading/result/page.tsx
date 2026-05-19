@@ -147,10 +147,11 @@ export default async function ReadingResultPage({
                         In the {card.positionLabel.toLowerCase()} position, {card.name} suggests this theme is closely tied
                         to your question and asks for intentional, heart-led action.
                       </p>
-                      {guidebookEntry && (
-                        <p className="mt-3 text-xs italic leading-relaxed text-slate-300/85">
-                          “{meaning.originalGuidebookText}”
-                        </p>
+                      {meaning.originalGuidebookText && (
+                        <p className="mt-3 text-xs italic text-slate-300/85">“{meaning.originalGuidebookText}”</p>
+                      )}
+                      {meaning.interpretationNotes && (
+                        <p className="mt-2 text-xs text-amber-200/80">Note: {meaning.interpretationNotes}</p>
                       )}
                     </div>
                   </div>
