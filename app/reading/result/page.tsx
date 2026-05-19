@@ -1,9 +1,13 @@
 import Link from "next/link";
-import type { DrawnCard, SpreadKey } from "../../../components/draw/DrawExperience";
+import { getCardMeaning } from "../../../lib/guidebook";
+import type { DrawnCard, SpreadKey } from "../../../lib/spreads";
 
 type ReportData = {
   spreadKey: SpreadKey;
   spreadName: string;
+  deckId: string;
+  deckName: string;
+  deckDescription: string;
   question: string;
   drawnCards: DrawnCard[];
 };
@@ -11,6 +15,9 @@ type ReportData = {
 const DEFAULT_REPORT: ReportData = {
   spreadKey: "one-card",
   spreadName: "One-card reading",
+  deckId: "mystic-arcana",
+  deckName: "Mystic Arcana",
+  deckDescription: "Classic major-arcana-focused deck for grounded symbolic guidance.",
   question: "What message should I focus on today?",
   drawnCards: [
     {
@@ -22,20 +29,6 @@ const DEFAULT_REPORT: ReportData = {
   ],
 };
 
-const MOCK_MEANINGS: Record<string, { upright: string; reversed: string }> = {
-  "The Star": {
-    upright: "Hope, renewal, and quiet confidence returning after uncertainty.",
-    reversed: "Temporary discouragement that asks you to reconnect with faith in your path.",
-  },
-  "The Moon": {
-    upright: "Intuition, symbols, and subtle emotions asking for careful listening.",
-    reversed: "Confusion lifting as hidden truths begin to surface.",
-  },
-  "Wheel of Fortune": {
-    upright: "Turning points, fate, and momentum moving in your favor.",
-    reversed: "Delays or cycles repeating until a lesson is integrated.",
-  },
-};
 
 function parseReport(value?: string): ReportData {
   if (!value) return DEFAULT_REPORT;
@@ -47,6 +40,9 @@ function parseReport(value?: string): ReportData {
     return {
       spreadKey: parsed.spreadKey,
       spreadName: parsed.spreadName,
+      deckId: parsed.deckId || DEFAULT_REPORT.deckId,
+      deckName: parsed.deckName || DEFAULT_REPORT.deckName,
+      deckDescription: parsed.deckDescription || DEFAULT_REPORT.deckDescription,
       question: parsed.question || "No question provided.",
       drawnCards: parsed.drawnCards,
     };
@@ -62,9 +58,9 @@ function buildAdvice(spreadName: string): string {
 export default async function ReadingResultPage({
   searchParams,
 }: {
-  searchParams: Promise<{ report?: string }>;
+  searchParams: { report?: string };
 }) {
-  const { report } = await searchParams;
+  const { report } = searchParams;
   const reportData = parseReport(report);
 
   return (
@@ -89,7 +85,8 @@ export default async function ReadingResultPage({
             </div>
             <div className="rounded-2xl border border-amber-200/20 bg-slate-950/60 p-4">
               <p className="text-xs uppercase tracking-[0.15em] text-amber-200/80">Deck</p>
-              <p className="mt-2 text-sm text-amber-50">Mystic Arcana (mock deck)</p>
+              <p className="mt-2 text-sm text-amber-50">{reportData.deckName}</p>
+              <p className="mt-1 text-xs text-slate-300/90">{reportData.deckDescription}</p>
             </div>
           </div>
 
@@ -100,10 +97,7 @@ export default async function ReadingResultPage({
 
           <div className="mt-8 space-y-4">
             {reportData.drawnCards.map((card, index) => {
-              const meaning = MOCK_MEANINGS[card.name]?.[card.orientation] ||
-                (card.orientation === "upright"
-                  ? "Growth, insight, and forward movement are highlighted here."
-                  : "A pause invites reflection before your next meaningful move.");
+              const meaning = getCardMeaning(reportData.deckId, card.id, card.orientation);
 
               return (
                 <article
@@ -121,7 +115,10 @@ export default async function ReadingResultPage({
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <div className="rounded-xl border border-amber-200/20 bg-slate-900/60 p-3">
                       <p className="text-xs uppercase tracking-[0.14em] text-amber-200/80">Guidebook meaning (mock)</p>
-                      <p className="mt-2 text-sm text-slate-100/90">{meaning}</p>
+                      <p className="mt-2 text-sm text-slate-100/90">{meaning.text}</p>
+                      {meaning.keywords.length > 0 && (
+                        <p className="mt-2 text-xs text-amber-200/80">Keywords: {meaning.keywords.join(" · ")}</p>
+                      )}
                     </div>
                     <div className="rounded-xl border border-amber-200/20 bg-slate-900/60 p-3">
                       <p className="text-xs uppercase tracking-[0.14em] text-amber-200/80">Contextual interpretation (mock)</p>
@@ -129,6 +126,12 @@ export default async function ReadingResultPage({
                         In the {card.positionLabel.toLowerCase()} position, {card.name} suggests this theme is closely tied
                         to your question and asks for intentional, heart-led action.
                       </p>
+                      {meaning.originalGuidebookText && (
+                        <p className="mt-3 text-xs italic text-slate-300/85">“{meaning.originalGuidebookText}”</p>
+                      )}
+                      {meaning.interpretationNotes && (
+                        <p className="mt-2 text-xs text-amber-200/80">Note: {meaning.interpretationNotes}</p>
+                      )}
                     </div>
                   </div>
                 </article>
