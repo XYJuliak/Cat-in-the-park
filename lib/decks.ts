@@ -41,3 +41,12 @@ export const DEFAULT_DECK: TarotDeck = {
   description: "A calm, ceremonial deck for reflective readings.",
   cards: MAJOR_ARCANA_CARDS,
 };
+
+
+export function getDeckById(deckId?: string): TarotDeck {
+  if (!deckId || deckId !== DEFAULT_DECK.id) {
+    return DEFAULT_DECK;
+  }
+
+  return DEFAULT_DECK;
+}

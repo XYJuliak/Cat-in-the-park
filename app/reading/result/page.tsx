@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCardMeaning } from "../../../lib/guidebook";
 import type { DrawnCard, SpreadKey } from "../../../lib/spreads";
 
 type ReportData = {
