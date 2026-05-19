@@ -7,6 +7,7 @@ export type TarotDeck = {
   id: string;
   name: string;
   description: string;
+  supportsReversal: boolean;
   cards: TarotCard[];
 };
 
@@ -39,6 +40,7 @@ export const DEFAULT_DECK: TarotDeck = {
   id: "mystic-arcana",
   name: "Mystic Arcana",
   description: "A calm, ceremonial deck for reflective readings.",
+  supportsReversal: false,
   cards: MAJOR_ARCANA_CARDS,
 };
 

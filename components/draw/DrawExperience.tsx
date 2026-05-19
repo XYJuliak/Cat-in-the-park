@@ -5,7 +5,13 @@ import { useMemo, useState } from "react";
 import type { TarotDeck } from "../../lib/decks";
 import type { DrawnCard, SpreadConfig } from "../../lib/spreads";
 
-type RitualCard = DrawnCard & { revealed: boolean };
+type RitualCard = DrawnCard & {
+  revealed: boolean;
+  tiltDeg: number;
+  offsetX: number;
+  offsetY: number;
+  revealDelayMs: number;
+};
 
 function shuffleDeck<T>(cards: T[]): T[] {
   const next = [...cards];
@@ -16,12 +22,16 @@ function shuffleDeck<T>(cards: T[]): T[] {
   return next;
 }
 
+function randomBetween(min: number, max: number): number {
+  return Math.random() * (max - min) + min;
+}
+
 export default function DrawExperience({ spread, deck }: { spread: SpreadConfig; deck: TarotDeck }) {
   const [question, setQuestion] = useState("");
   const [isPrepared, setIsPrepared] = useState(false);
   const [cards, setCards] = useState<RitualCard[]>([]);
 
-  const drawnCards: DrawnCard[] = cards.map(({ revealed, ...card }) => card);
+  const drawnCards: DrawnCard[] = cards.map(({ revealed, tiltDeg, offsetX, offsetY, revealDelayMs, ...card }) => card);
   const revealedCount = cards.filter((card) => card.revealed).length;
   const canContinue = cards.length > 0 && revealedCount === spread.cardCount;
 
@@ -45,8 +55,16 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
       randomized.map((card, index) => ({
         ...card,
         revealed: false,
-        orientation: Math.random() > 0.5 ? "upright" : "reversed",
+        orientation: deck.supportsReversal
+          ? Math.random() > 0.5
+            ? "upright"
+            : "reversed"
+          : "upright",
         positionLabel: spread.positions[index] || `Position ${index + 1}`,
+        tiltDeg: randomBetween(-5.5, 5.5),
+        offsetX: randomBetween(-6, 6),
+        offsetY: randomBetween(-4, 5),
+        revealDelayMs: Math.round(randomBetween(0, 160)),
       }))
     );
     setIsPrepared(true);
@@ -126,18 +144,34 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
                 key={`${card.id}-${index}`}
                 onClick={() => revealCard(index)}
                 disabled={card.revealed}
+                style={{
+                  transform: `translate(${card.offsetX}px, ${card.offsetY}px) rotate(${card.tiltDeg}deg)`,
+                }}
                 className="group min-h-44 rounded-2xl border border-amber-200/20 bg-slate-900/60 p-3 text-left transition-all duration-700 hover:-translate-y-1 hover:border-amber-300/60 disabled:cursor-default"
               >
                 <p className="text-[10px] uppercase tracking-[0.16em] text-amber-200/80">{card.positionLabel}</p>
-                <div className="mt-3 flex h-28 items-center justify-center rounded-xl border border-amber-200/20 bg-gradient-to-b from-slate-900 to-slate-950">
-                  {card.revealed ? (
-                    <div className="text-center animate-[fadeIn_600ms_ease]">
-                      <p className="text-sm font-semibold text-amber-100">{card.name}</p>
-                      <p className="mt-1 text-xs text-red-200/90">{card.orientation}</p>
+
+                <div className="mt-3 h-28 [perspective:1200px]">
+                  <div
+                    style={{ transitionDelay: `${card.revealDelayMs}ms` }}
+                    className={`relative h-full w-full rounded-xl transition-transform duration-700 [transform-style:preserve-3d] ${
+                      card.revealed ? "[transform:rotateY(180deg)]" : ""
+                    }`}
+                  >
+                    <div className="absolute inset-0 flex items-center justify-center rounded-xl border border-amber-300/35 bg-[radial-gradient(circle_at_30%_20%,rgba(180,83,9,0.28),rgba(15,23,42,0.95)_55%)] shadow-[inset_0_0_30px_rgba(251,191,36,0.1)] [backface-visibility:hidden]">
+                      <div className="text-center">
+                        <p className="text-lg text-amber-300/85">✶</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-[0.22em] text-amber-100/70">Arcana</p>
+                      </div>
                     </div>
-                  ) : (
-                    <p className="text-lg text-amber-300/80">✶</p>
-                  )}
+
+                    <div className="absolute inset-0 flex items-center justify-center rounded-xl border border-amber-200/30 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 [transform:rotateY(180deg)] [backface-visibility:hidden]">
+                      <div className="text-center animate-[fadeIn_600ms_ease]">
+                        <p className="text-sm font-semibold text-amber-100">{card.name}</p>
+                        <p className="mt-1 text-xs text-red-200/90">{card.orientation}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </button>
             ))}
