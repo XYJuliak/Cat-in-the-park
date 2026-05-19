@@ -21,6 +21,7 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
   const [isPrepared, setIsPrepared] = useState(false);
   const [cards, setCards] = useState<RitualCard[]>([]);
 
+  const drawnCards: DrawnCard[] = cards.map(({ revealed, ...card }) => card);
   const revealedCount = cards.filter((card) => card.revealed).length;
   const canContinue = cards.length > 0 && revealedCount === spread.cardCount;
 
@@ -70,10 +71,7 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
           <h1 className="mt-4 bg-gradient-to-b from-amber-100 via-amber-300 to-red-300 bg-clip-text text-3xl font-semibold text-transparent sm:text-4xl">
             {spread.name}
           </h1>
-          <p className="mt-4 text-sm text-slate-200/90">
-            Selected deck: <span className="font-semibold text-amber-100">{deck.name}</span>
-          </p>
-          <p className="mt-1 text-sm text-slate-300/85">{deck.description}</p>
+          <p className="mt-3 text-sm text-slate-300">{deck.name} · {deck.description}</p>
 
           <label className="mt-6 block text-sm font-medium text-amber-100">Set your intention</label>
           <textarea
