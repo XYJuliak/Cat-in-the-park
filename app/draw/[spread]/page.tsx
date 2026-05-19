@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import DrawExperience from "../../../components/draw/DrawExperience";
-import { getDeckById } from "../../../lib/decks";
 import { SPREADS } from "../../../lib/spreads";
+import { getDeckById } from "../../../lib/decks";
 
 type SpreadKey = keyof typeof SPREADS;
 
@@ -14,10 +14,9 @@ export default function SpreadDrawPage({
 }) {
   const { spread } = params;
   const spreadConfig = SPREADS[spread as SpreadKey];
-
   const selectedDeck = getDeckById(searchParams.deck);
 
-  if (!spreadConfig) {
+  if (!spreadConfig || !selectedDeck) {
     notFound();
   }
 

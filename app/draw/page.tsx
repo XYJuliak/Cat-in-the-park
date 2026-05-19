@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TAROT_DECKS } from "../../lib/decks";
 
 const spreads = [
   {
