@@ -2,86 +2,10 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import type { TarotDeck } from "../../lib/decks";
+import type { DrawnCard, SpreadConfig } from "../../lib/spreads";
 
-export type SpreadKey = "one-card" | "three-card" | "celtic-cross";
-
-export type DrawnCard = {
-  id: string;
-  name: string;
-  orientation: "upright" | "reversed";
-  positionLabel: string;
-};
-
-type TarotCard = {
-  id: string;
-  name: string;
-};
-
-type SpreadConfig = {
-  key: SpreadKey;
-  name: string;
-  cardCount: number;
-  positions: string[];
-};
-
-const TAROT_MOCK_DECK: TarotCard[] = [
-  { id: "fool", name: "The Fool" },
-  { id: "magician", name: "The Magician" },
-  { id: "high-priestess", name: "The High Priestess" },
-  { id: "empress", name: "The Empress" },
-  { id: "emperor", name: "The Emperor" },
-  { id: "hierophant", name: "The Hierophant" },
-  { id: "lovers", name: "The Lovers" },
-  { id: "chariot", name: "The Chariot" },
-  { id: "strength", name: "Strength" },
-  { id: "hermit", name: "The Hermit" },
-  { id: "wheel", name: "Wheel of Fortune" },
-  { id: "justice", name: "Justice" },
-  { id: "hanged-man", name: "The Hanged Man" },
-  { id: "death", name: "Death" },
-  { id: "temperance", name: "Temperance" },
-  { id: "devil", name: "The Devil" },
-  { id: "tower", name: "The Tower" },
-  { id: "star", name: "The Star" },
-  { id: "moon", name: "The Moon" },
-  { id: "sun", name: "The Sun" },
-  { id: "judgement", name: "Judgement" },
-  { id: "world", name: "The World" },
-];
-
-export const SPREADS: Record<SpreadKey, SpreadConfig> = {
-  "one-card": {
-    key: "one-card",
-    name: "One-card reading",
-    cardCount: 1,
-    positions: ["Primary influence"],
-  },
-  "three-card": {
-    key: "three-card",
-    name: "Three-card reading",
-    cardCount: 3,
-    positions: ["Past", "Present", "Future"],
-  },
-  "celtic-cross": {
-    key: "celtic-cross",
-    name: "Celtic Cross reading",
-    cardCount: 10,
-    positions: [
-      "The situation",
-      "The challenge",
-      "Distant past",
-      "Recent past",
-      "Possible outcome",
-      "Near future",
-      "Self",
-      "Others & environment",
-      "Hopes & fears",
-      "Final outcome",
-    ],
-  },
-};
-
-function shuffleDeck(cards: TarotCard[]): TarotCard[] {
+function shuffleDeck<T>(cards: T[]): T[] {
   const next = [...cards];
   for (let i = next.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -90,7 +14,7 @@ function shuffleDeck(cards: TarotCard[]): TarotCard[] {
   return next;
 }
 
-export default function DrawExperience({ spread }: { spread: SpreadConfig }) {
+export default function DrawExperience({ spread, deck }: { spread: SpreadConfig; deck: TarotDeck }) {
   const [question, setQuestion] = useState("");
   const [drawnCards, setDrawnCards] = useState<DrawnCard[]>([]);
 
@@ -101,10 +25,13 @@ export default function DrawExperience({ spread }: { spread: SpreadConfig }) {
       JSON.stringify({
         spreadKey: spread.key,
         spreadName: spread.name,
+        deckId: deck.id,
+        deckName: deck.name,
+        deckDescription: deck.description,
         question,
         drawnCards,
       }),
-    [drawnCards, question, spread.key, spread.name]
+    [deck.description, deck.id, deck.name, drawnCards, question, spread.key, spread.name]
   );
 
   const helperText = useMemo(() => {
@@ -113,7 +40,7 @@ export default function DrawExperience({ spread }: { spread: SpreadConfig }) {
   }, [drawnCards.length, spread.cardCount]);
 
   const handleDraw = () => {
-    const randomCards = shuffleDeck(TAROT_MOCK_DECK).slice(0, spread.cardCount);
+    const randomCards = shuffleDeck(deck.cards).slice(0, spread.cardCount);
     const nextDraw: DrawnCard[] = randomCards.map((card, index) => ({
       ...card,
       orientation: Math.random() > 0.5 ? "upright" : "reversed",
@@ -137,6 +64,10 @@ export default function DrawExperience({ spread }: { spread: SpreadConfig }) {
           <h1 className="mt-4 bg-gradient-to-b from-amber-100 via-amber-300 to-red-300 bg-clip-text text-3xl font-semibold text-transparent sm:text-4xl">
             {spread.name}
           </h1>
+          <p className="mt-4 text-sm text-slate-200/90">
+            Selected deck: <span className="font-semibold text-amber-100">{deck.name}</span>
+          </p>
+          <p className="mt-1 text-sm text-slate-300/85">{deck.description}</p>
 
           <label className="mt-8 block text-sm font-medium text-amber-100">Your question</label>
           <textarea
