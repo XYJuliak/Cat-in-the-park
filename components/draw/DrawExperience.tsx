@@ -2,86 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import type { TarotDeck } from "../../lib/decks";
+import type { DrawnCard, SpreadConfig } from "../../lib/spreads";
 
-export type SpreadKey = "one-card" | "three-card" | "celtic-cross";
+type RitualCard = DrawnCard & { revealed: boolean };
 
-export type DrawnCard = {
-  id: string;
-  name: string;
-  orientation: "upright" | "reversed";
-  positionLabel: string;
-};
-
-type TarotCard = {
-  id: string;
-  name: string;
-};
-
-type SpreadConfig = {
-  key: SpreadKey;
-  name: string;
-  cardCount: number;
-  positions: string[];
-};
-
-const TAROT_MOCK_DECK: TarotCard[] = [
-  { id: "fool", name: "The Fool" },
-  { id: "magician", name: "The Magician" },
-  { id: "high-priestess", name: "The High Priestess" },
-  { id: "empress", name: "The Empress" },
-  { id: "emperor", name: "The Emperor" },
-  { id: "hierophant", name: "The Hierophant" },
-  { id: "lovers", name: "The Lovers" },
-  { id: "chariot", name: "The Chariot" },
-  { id: "strength", name: "Strength" },
-  { id: "hermit", name: "The Hermit" },
-  { id: "wheel", name: "Wheel of Fortune" },
-  { id: "justice", name: "Justice" },
-  { id: "hanged-man", name: "The Hanged Man" },
-  { id: "death", name: "Death" },
-  { id: "temperance", name: "Temperance" },
-  { id: "devil", name: "The Devil" },
-  { id: "tower", name: "The Tower" },
-  { id: "star", name: "The Star" },
-  { id: "moon", name: "The Moon" },
-  { id: "sun", name: "The Sun" },
-  { id: "judgement", name: "Judgement" },
-  { id: "world", name: "The World" },
-];
-
-export const SPREADS: Record<SpreadKey, SpreadConfig> = {
-  "one-card": {
-    key: "one-card",
-    name: "One-card reading",
-    cardCount: 1,
-    positions: ["Primary influence"],
-  },
-  "three-card": {
-    key: "three-card",
-    name: "Three-card reading",
-    cardCount: 3,
-    positions: ["Past", "Present", "Future"],
-  },
-  "celtic-cross": {
-    key: "celtic-cross",
-    name: "Celtic Cross reading",
-    cardCount: 10,
-    positions: [
-      "The situation",
-      "The challenge",
-      "Distant past",
-      "Recent past",
-      "Possible outcome",
-      "Near future",
-      "Self",
-      "Others & environment",
-      "Hopes & fears",
-      "Final outcome",
-    ],
-  },
-};
-
-function shuffleDeck(cards: TarotCard[]): TarotCard[] {
+function shuffleDeck<T>(cards: T[]): T[] {
   const next = [...cards];
   for (let i = next.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -90,99 +16,132 @@ function shuffleDeck(cards: TarotCard[]): TarotCard[] {
   return next;
 }
 
-export default function DrawExperience({ spread }: { spread: SpreadConfig }) {
+export default function DrawExperience({ spread, deck }: { spread: SpreadConfig; deck: TarotDeck }) {
   const [question, setQuestion] = useState("");
-  const [drawnCards, setDrawnCards] = useState<DrawnCard[]>([]);
+  const [isPrepared, setIsPrepared] = useState(false);
+  const [cards, setCards] = useState<RitualCard[]>([]);
 
-  const canContinue = drawnCards.length === spread.cardCount;
+  const revealedCount = cards.filter((card) => card.revealed).length;
+  const canContinue = cards.length > 0 && revealedCount === spread.cardCount;
 
   const reportPayload = useMemo(
     () =>
       JSON.stringify({
         spreadKey: spread.key,
         spreadName: spread.name,
+        deckId: deck.id,
+        deckName: deck.name,
+        deckDescription: deck.description,
         question,
-        drawnCards,
+        drawnCards: cards.map(({ revealed, ...card }) => card),
       }),
-    [drawnCards, question, spread.key, spread.name]
+    [cards, deck.description, deck.id, deck.name, question, spread.key, spread.name]
   );
 
-  const helperText = useMemo(() => {
-    if (drawnCards.length === 0) return "Your deck is waiting. Draw when ready.";
-    return `${drawnCards.length} of ${spread.cardCount} cards revealed.`;
-  }, [drawnCards.length, spread.cardCount]);
+  const beginRitual = () => {
+    const randomized = shuffleDeck(deck.cards).slice(0, spread.cardCount);
+    setCards(
+      randomized.map((card, index) => ({
+        ...card,
+        revealed: false,
+        orientation: Math.random() > 0.5 ? "upright" : "reversed",
+        positionLabel: spread.positions[index] || `Position ${index + 1}`,
+      }))
+    );
+    setIsPrepared(true);
+  };
 
-  const handleDraw = () => {
-    const randomCards = shuffleDeck(TAROT_MOCK_DECK).slice(0, spread.cardCount);
-    const nextDraw: DrawnCard[] = randomCards.map((card, index) => ({
-      ...card,
-      orientation: Math.random() > 0.5 ? "upright" : "reversed",
-      positionLabel: spread.positions[index] || `Position ${index + 1}`,
-    }));
+  const reshuffle = () => {
+    beginRitual();
+  };
 
-    setDrawnCards(nextDraw);
+  const revealCard = (index: number) => {
+    setCards((prev) => prev.map((card, i) => (i === index ? { ...card, revealed: true } : card)));
   };
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-slate-950 text-amber-50">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(153,27,27,0.28),_rgba(2,6,23,0.96)_58%)]" />
-      <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-red-800/20 blur-3xl animate-pulse" />
-      <div className="pointer-events-none absolute -right-28 bottom-24 h-80 w-80 rounded-full bg-amber-500/10 blur-3xl animate-pulse [animation-delay:800ms]" />
-
-      <section className="relative mx-auto w-full max-w-6xl px-6 py-12 sm:px-10 lg:px-12 lg:py-16">
-        <div className="rounded-3xl border border-amber-200/20 bg-slate-900/60 p-6 shadow-[0_20px_80px_rgba(251,191,36,0.08)] backdrop-blur-xl sm:p-10">
+      <section className="relative mx-auto w-full max-w-6xl px-4 py-10 sm:px-8 sm:py-14">
+        <div className="rounded-3xl border border-amber-200/20 bg-slate-900/60 p-5 backdrop-blur-xl sm:p-8">
           <p className="inline-flex rounded-full border border-amber-300/25 bg-amber-300/10 px-4 py-1 text-xs uppercase tracking-[0.2em] text-amber-200/90">
-            Draw cards
+            Ritual draw
           </p>
           <h1 className="mt-4 bg-gradient-to-b from-amber-100 via-amber-300 to-red-300 bg-clip-text text-3xl font-semibold text-transparent sm:text-4xl">
             {spread.name}
           </h1>
+          <p className="mt-3 text-sm text-slate-300">{deck.name} · {deck.description}</p>
 
-          <label className="mt-8 block text-sm font-medium text-amber-100">Your question</label>
+          <label className="mt-6 block text-sm font-medium text-amber-100">Set your intention</label>
           <textarea
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
             rows={3}
-            placeholder="What would you like clarity on today?"
+            placeholder="Breathe in. Ask your question with clarity..."
             className="mt-2 w-full rounded-xl border border-amber-200/25 bg-slate-950/70 px-4 py-3 text-sm text-amber-50 placeholder:text-slate-300/70 focus:outline-none focus:ring-2 focus:ring-amber-200/70"
           />
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={handleDraw}
-              className="rounded-xl border border-red-300/35 bg-red-900/35 px-5 py-3 text-sm font-medium text-amber-50 transition-all duration-300 hover:-translate-y-0.5 hover:border-red-200/80 hover:bg-red-700/45 hover:shadow-[0_8px_30px_rgba(185,28,28,0.25)]"
+              onClick={beginRitual}
+              className="rounded-xl border border-red-300/35 bg-red-900/35 px-5 py-2.5 text-sm font-medium transition-all duration-500 hover:border-red-200/80 hover:bg-red-700/45"
             >
-              Draw {spread.cardCount} {spread.cardCount === 1 ? "card" : "cards"}
+              {isPrepared ? "Lay cards again" : "Begin ritual"}
             </button>
-
+            {isPrepared && (
+              <button
+                type="button"
+                onClick={reshuffle}
+                className="rounded-xl border border-amber-300/35 bg-amber-100/10 px-5 py-2.5 text-sm font-medium transition-all duration-500 hover:border-amber-200/80 hover:bg-amber-200/20"
+              >
+                Shuffle energy
+              </button>
+            )}
             <Link
               href={`/reading/result?report=${encodeURIComponent(reportPayload)}`}
-              className={`rounded-xl border px-5 py-3 text-sm font-medium transition-all duration-300 ${
+              className={`rounded-xl border px-5 py-2.5 text-sm font-medium transition-all duration-500 ${
                 canContinue
-                  ? "border-amber-300/35 bg-amber-100/10 text-amber-50 hover:-translate-y-0.5 hover:border-amber-200/80 hover:bg-amber-200/20"
+                  ? "border-amber-300/35 bg-amber-100/10 hover:border-amber-200/80 hover:bg-amber-200/20"
                   : "pointer-events-none border-slate-700/60 bg-slate-800/50 text-slate-400"
               }`}
             >
-              Continue to reading result
+              View reading
             </Link>
-
-            <p className="text-sm text-slate-300/90">{helperText}</p>
           </div>
+
+          <p className="mt-4 text-sm text-slate-300">
+            {!isPrepared
+              ? "When ready, begin the ritual to lay your card backs."
+              : `${revealedCount}/${spread.cardCount} cards revealed. Tap each card to uncover its message.`}
+          </p>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {drawnCards.map((card, index) => (
-            <article
-              key={`${card.id}-${index}`}
-              className="rounded-2xl border border-amber-200/20 bg-slate-900/60 p-5 backdrop-blur-xl transition-all duration-300 hover:border-amber-200/70"
-            >
-              <p className="text-xs uppercase tracking-[0.18em] text-amber-200/80">{card.positionLabel}</p>
-              <h2 className="mt-2 text-lg font-semibold text-amber-100">{card.name}</h2>
-              <p className="mt-2 text-sm text-red-200/90">Orientation: {card.orientation}</p>
-            </article>
-          ))}
-        </div>
+        {isPrepared && (
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {cards.map((card, index) => (
+              <button
+                type="button"
+                key={`${card.id}-${index}`}
+                onClick={() => revealCard(index)}
+                disabled={card.revealed}
+                className="group min-h-44 rounded-2xl border border-amber-200/20 bg-slate-900/60 p-3 text-left transition-all duration-700 hover:-translate-y-1 hover:border-amber-300/60 disabled:cursor-default"
+              >
+                <p className="text-[10px] uppercase tracking-[0.16em] text-amber-200/80">{card.positionLabel}</p>
+                <div className="mt-3 flex h-28 items-center justify-center rounded-xl border border-amber-200/20 bg-gradient-to-b from-slate-900 to-slate-950">
+                  {card.revealed ? (
+                    <div className="text-center animate-[fadeIn_600ms_ease]">
+                      <p className="text-sm font-semibold text-amber-100">{card.name}</p>
+                      <p className="mt-1 text-xs text-red-200/90">{card.orientation}</p>
+                    </div>
+                  ) : (
+                    <p className="text-lg text-amber-300/80">✶</p>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
