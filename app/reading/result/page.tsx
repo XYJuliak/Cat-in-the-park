@@ -4,6 +4,9 @@ import type { DrawnCard, SpreadKey } from "../../../components/draw/DrawExperien
 type ReportData = {
   spreadKey: SpreadKey;
   spreadName: string;
+  deckId: string;
+  deckName: string;
+  deckDescription: string;
   question: string;
   drawnCards: DrawnCard[];
 };
@@ -11,6 +14,9 @@ type ReportData = {
 const DEFAULT_REPORT: ReportData = {
   spreadKey: "one-card",
   spreadName: "One-card reading",
+  deckId: "mystic-arcana",
+  deckName: "Mystic Arcana",
+  deckDescription: "Classic major-arcana-focused deck for grounded symbolic guidance.",
   question: "What message should I focus on today?",
   drawnCards: [
     {
@@ -47,6 +53,9 @@ function parseReport(value?: string): ReportData {
     return {
       spreadKey: parsed.spreadKey,
       spreadName: parsed.spreadName,
+      deckId: parsed.deckId || DEFAULT_REPORT.deckId,
+      deckName: parsed.deckName || DEFAULT_REPORT.deckName,
+      deckDescription: parsed.deckDescription || DEFAULT_REPORT.deckDescription,
       question: parsed.question || "No question provided.",
       drawnCards: parsed.drawnCards,
     };
@@ -62,9 +71,9 @@ function buildAdvice(spreadName: string): string {
 export default async function ReadingResultPage({
   searchParams,
 }: {
-  searchParams: Promise<{ report?: string }>;
+  searchParams: { report?: string };
 }) {
-  const { report } = await searchParams;
+  const { report } = searchParams;
   const reportData = parseReport(report);
 
   return (
@@ -89,7 +98,8 @@ export default async function ReadingResultPage({
             </div>
             <div className="rounded-2xl border border-amber-200/20 bg-slate-950/60 p-4">
               <p className="text-xs uppercase tracking-[0.15em] text-amber-200/80">Deck</p>
-              <p className="mt-2 text-sm text-amber-50">Mystic Arcana (mock deck)</p>
+              <p className="mt-2 text-sm text-amber-50">{reportData.deckName}</p>
+              <p className="mt-1 text-xs text-slate-300/90">{reportData.deckDescription}</p>
             </div>
           </div>
 
