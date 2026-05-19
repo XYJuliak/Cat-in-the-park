@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { DrawnCard, SpreadKey } from "../../../components/draw/DrawExperience";
+import type { DrawnCard, SpreadKey } from "../../../lib/spreads";
 
 type ReportData = {
   spreadKey: SpreadKey;

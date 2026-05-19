@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import DrawExperience, { SPREADS } from "../../../components/draw/DrawExperience";
+import DrawExperience from "../../../components/draw/DrawExperience";
+import { SPREADS } from "../../../lib/spreads";
 import { getDeckById } from "../../../lib/decks";
 
 type SpreadKey = keyof typeof SPREADS;
