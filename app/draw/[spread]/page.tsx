@@ -6,9 +6,9 @@ type SpreadKey = keyof typeof SPREADS;
 export default async function SpreadDrawPage({
   params,
 }: {
-  params: Promise<{ spread: string }>;
+  params: { spread: string };
 }) {
-  const { spread } = await params;
+  const { spread } = params;
   const spreadConfig = SPREADS[spread as SpreadKey];
 
   if (!spreadConfig) {
