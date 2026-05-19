@@ -62,9 +62,9 @@ function buildAdvice(spreadName: string): string {
 export default async function ReadingResultPage({
   searchParams,
 }: {
-  searchParams: Promise<{ report?: string }>;
+  searchParams: { report?: string };
 }) {
-  const { report } = await searchParams;
+  const { report } = searchParams;
   const reportData = parseReport(report);
 
   return (
