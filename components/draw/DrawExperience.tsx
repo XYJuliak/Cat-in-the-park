@@ -35,7 +35,7 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
         question,
         drawnCards: cards.map(({ revealed, ...card }) => card),
       }),
-    [cards, deck.description, deck.id, deck.name, question, spread.key, spread.name]
+    [deck.description, deck.id, deck.name, drawnCards, question, spread.key, spread.name]
   );
 
   const beginRitual = () => {
@@ -70,7 +70,10 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
           <h1 className="mt-4 bg-gradient-to-b from-amber-100 via-amber-300 to-red-300 bg-clip-text text-3xl font-semibold text-transparent sm:text-4xl">
             {spread.name}
           </h1>
-          <p className="mt-3 text-sm text-slate-300">{deck.name} · {deck.description}</p>
+          <p className="mt-4 text-sm text-slate-200/90">
+            Selected deck: <span className="font-semibold text-amber-100">{deck.name}</span>
+          </p>
+          <p className="mt-1 text-sm text-slate-300/85">{deck.description}</p>
 
           <label className="mt-6 block text-sm font-medium text-amber-100">Set your intention</label>
           <textarea
