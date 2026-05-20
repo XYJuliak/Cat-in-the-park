@@ -14,10 +14,9 @@ export default function SpreadDrawPage({
 }) {
   const { spread } = params;
   const spreadConfig = SPREADS[spread as SpreadKey];
-
   const selectedDeck = getDeckById(searchParams.deck);
 
-  if (!spreadConfig) {
+  if (!spreadConfig || !selectedDeck) {
     notFound();
   }
 

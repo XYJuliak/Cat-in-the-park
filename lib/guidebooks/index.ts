@@ -1,14 +1,11 @@
-import { OUTDOORS_GUIDEBOOK_BY_ID } from "./outdoors-guide";
+import { OUTDOORS_GUIDEBOOK } from "./outdoors-guide";
 
 export type GuidebookEntry = {
-  id: string;
-  name: string;
-  number: number;
-  guidebook: {
-    text: string;
-    keywords: string[];
-    beware: string[];
-  };
+  cardName: string;
+  keywords: string[];
+  beware: string[];
+  uprightMeaning: string;
+  originalGuidebookText: string;
 };
 
 export type Guidebook = Record<string, GuidebookEntry>;
