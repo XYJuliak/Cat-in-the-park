@@ -1,0 +1,28 @@
+{
+  "deckId": "mystic-arcana",
+  "deckName": "Mystic Arcana",
+  "version": "1.0.0",
+  "source": "mock-seeded-from-guidebook-pdf-workflow",
+  "cards": [
+    {
+      "deckId": "mystic-arcana",
+      "cardId": "star",
+      "cardName": "The Star",
+      "uprightKeywords": ["hope", "renewal", "healing"],
+      "uprightOriginalGuidebookText": "Under the starlit sky, the seeker pours life back into the earth and remembers their source.",
+      "reversedKeywords": ["discouragement", "doubt", "reconnection"],
+      "reversedOriginalGuidebookText": "When the waters still, faith feels distant; yet the stars remain, waiting for your return.",
+      "notes": "Use with recovery-oriented readings and post-conflict clarity themes."
+    },
+    {
+      "deckId": "mystic-arcana",
+      "cardId": "moon",
+      "cardName": "The Moon",
+      "uprightKeywords": ["intuition", "symbols", "uncertainty"],
+      "uprightOriginalGuidebookText": "The moon path is misted—walk slowly, and let instinct speak before certainty arrives.",
+      "reversedKeywords": ["clarity", "unveiling", "release"],
+      "reversedOriginalGuidebookText": "As shadows thin, the hidden path appears and anxious echoes lose their voice.",
+      "notes": "Strong in readings about ambiguity, dreams, and emotional processing."
+    }
+  ]
+}
