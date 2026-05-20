@@ -105,12 +105,7 @@ export default async function ReadingResultPage({
                   key={`${card.id}-${index}`}
                   className="rounded-2xl border border-amber-200/20 bg-slate-950/60 p-5 transition-all duration-300 hover:border-amber-200/70"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="text-lg font-semibold text-amber-100">{card.name}</h2>
-                    <span className="rounded-full border border-red-200/35 bg-red-900/35 px-3 py-1 text-xs uppercase tracking-wide text-red-100/90">
-                      {card.orientation}
-                    </span>
-                  </div>
+                  <h2 className="text-lg font-semibold text-amber-100">{card.name}</h2>
                   <p className="mt-2 text-xs uppercase tracking-[0.14em] text-amber-200/80">{card.positionLabel}</p>
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -140,6 +135,15 @@ export default async function ReadingResultPage({
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  <div className="mt-4 rounded-xl border border-amber-200/15 bg-slate-900/40 p-3">
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-amber-200/80">
+                      AI interpretation (coming soon)
+                    </p>
+                    <p className="mt-1 text-xs text-slate-300/85">
+                      This section is reserved for a future AI interpretation layer.
+                    </p>
                   </div>
                 </article>
               );
