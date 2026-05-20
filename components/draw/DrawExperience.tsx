@@ -44,7 +44,7 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
         deckName: deck.name,
         deckDescription: deck.description,
         question,
-        drawnCards,
+        drawnCards: cards.map(({ revealed, ...card }) => card),
       }),
     [deck.description, deck.id, deck.name, drawnCards, question, spread.key, spread.name]
   );

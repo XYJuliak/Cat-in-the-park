@@ -26,7 +26,7 @@ export function getCardMeaning(cardId: string): {
 
   if (!entry) {
     return {
-      text: "",
+      text: "Guidebook text is not available for this card yet.",
       keywords: [],
       beware: [],
     };
