@@ -22,7 +22,7 @@ const MAJOR_ARCANA_CARDS: TarotCard[] = [
   { id: "chariot", name: "The Chariot" },
   { id: "strength", name: "Strength" },
   { id: "hermit", name: "The Hermit" },
-  { id: "wheel", name: "Wheel of Fortune" },
+  { id: "wheel-of-fortune", name: "Wheel of Fortune" },
   { id: "justice", name: "Justice" },
   { id: "hanged-man", name: "The Hanged Man" },
   { id: "death", name: "Death" },
@@ -32,7 +32,7 @@ const MAJOR_ARCANA_CARDS: TarotCard[] = [
   { id: "star", name: "The Star" },
   { id: "moon", name: "The Moon" },
   { id: "sun", name: "The Sun" },
-  { id: "judgement", name: "Judgement" },
+  { id: "judgment", name: "Judgment" },
   { id: "world", name: "The World" },
 ];
 
