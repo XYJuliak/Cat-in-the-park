@@ -5,52 +5,33 @@ export type GuidebookEntry = {
   keywords: string[];
   beware: string[];
   uprightMeaning: string;
-  reversedMeaning?: string;
   originalGuidebookText: string;
 };
 
 export type Guidebook = Record<string, GuidebookEntry>;
 
 export function getGuidebookEntry(cardId: string): GuidebookEntry | undefined {
-  return OUTDOORS_GUIDEBOOK[cardId];
+  return OUTDOORS_GUIDEBOOK_BY_ID[cardId];
 }
 
-export function getCardMeaning(
-  cardId: string,
-  orientation: "upright" | "reversed"
-): {
+export function getCardMeaning(cardId: string): {
   text: string;
   keywords: string[];
   beware: string[];
-  uprightMeaning: string;
-  reversedMeaning?: string;
-  originalGuidebookText: string;
 } {
   const entry = getGuidebookEntry(cardId);
 
   if (!entry) {
-    const fallbackUpright = "Growth, insight, and forward movement are highlighted here.";
-    const fallbackReversed = "A pause invites reflection before your next meaningful move.";
-
     return {
-      text: orientation === "reversed" ? fallbackReversed : fallbackUpright,
+      text: "Guidebook text is not available for this card yet.",
       keywords: [],
       beware: [],
-      uprightMeaning: fallbackUpright,
-      reversedMeaning: fallbackReversed,
-      originalGuidebookText: "Mock guidebook text is not available for this card yet.",
     };
   }
 
   return {
-    text:
-      orientation === "reversed"
-        ? entry.reversedMeaning || "Reversed interpretation is not available for this deck."
-        : entry.uprightMeaning,
-    keywords: entry.keywords,
-    beware: entry.beware,
-    uprightMeaning: entry.uprightMeaning,
-    reversedMeaning: entry.reversedMeaning,
-    originalGuidebookText: entry.originalGuidebookText,
+    text: entry.guidebook.text,
+    keywords: entry.guidebook.keywords,
+    beware: entry.guidebook.beware,
   };
 }

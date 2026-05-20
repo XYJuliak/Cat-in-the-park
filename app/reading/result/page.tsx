@@ -97,7 +97,7 @@ export default async function ReadingResultPage({
 
           <div className="mt-8 space-y-4">
             {reportData.drawnCards.map((card, index) => {
-              const meaning = getCardMeaning(card.id, card.orientation);
+              const meaning = getCardMeaning(card.id);
               const guidebookEntry = getGuidebookEntry(card.id);
 
               return (
@@ -131,27 +131,13 @@ export default async function ReadingResultPage({
                           <p className="mt-1 text-xs text-red-100/85">{meaning.beware.join(" · ")}</p>
                         </div>
                       )}
-
-                      {card.orientation === "reversed" && meaning.reversedMeaning && (
-                        <div className="mt-3">
-                          <p className="text-[11px] uppercase tracking-[0.14em] text-amber-200/80">
-                            Reversed interpretation
-                          </p>
-                          <p className="mt-1 text-xs text-slate-200/90">{meaning.reversedMeaning}</p>
-                        </div>
-                      )}
                     </div>
                     <div className="rounded-xl border border-amber-200/20 bg-slate-900/60 p-3">
-                      <p className="text-xs uppercase tracking-[0.14em] text-amber-200/80">Contextual interpretation (mock)</p>
-                      <p className="mt-2 text-sm text-slate-100/90">
-                        In the {card.positionLabel.toLowerCase()} position, {card.name} suggests this theme is closely tied
-                        to your question and asks for intentional, heart-led action.
-                      </p>
-                      {meaning.originalGuidebookText && (
-                        <p className="mt-3 text-xs italic text-slate-300/85">“{meaning.originalGuidebookText}”</p>
-                      )}
-                      {meaning.interpretationNotes && (
-                        <p className="mt-2 text-xs text-amber-200/80">Note: {meaning.interpretationNotes}</p>
+                      <p className="text-xs uppercase tracking-[0.14em] text-amber-200/80">Guidebook text</p>
+                      {guidebookEntry && (
+                        <p className="mt-2 text-sm italic leading-relaxed text-slate-300/85">
+                          “{guidebookEntry.guidebook.text}”
+                        </p>
                       )}
                     </div>
                   </div>
