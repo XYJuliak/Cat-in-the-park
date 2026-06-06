@@ -14,6 +14,38 @@ export default function SpreadDrawPage({
 }) {
   const { spread } = params;
   const spreadConfig = SPREADS[spread as SpreadKey];
+  const selectedDeck = getDeckById(searchParams.deck);
+
+  const selectedDeck = getDeckById(searchParams.deck);
+
+  console.log(
+    "Deck size:",
+    selectedDeck.cards.length
+  );
+
+  const selectedDeck = getDeckById(searchParams.deck);
+  const suitDistribution = selectedDeck.cards.reduce<Record<TarotSuit, number>>(
+    (counts, card) => ({
+      ...counts,
+      [card.suit]: counts[card.suit] + 1,
+    }),
+    {
+      major: 0,
+      vessels: 0,
+      sticks: 0,
+      stones: 0,
+      blades: 0,
+    }
+  );
+
+  console.log("Deck size:", selectedDeck.cards.length);
+  console.log("Deck suit distribution:", suitDistribution);
+
+  const selectedDeck = getDeckById(searchParams.deck);
+  const suitDistribution = getDeckSuitDistribution(selectedDeck);
+
+  console.log("Deck size:", selectedDeck.cards.length);
+  console.log("Deck suit distribution:", suitDistribution);
 
   const selectedDeck = getDeckById(searchParams.deck);
   const suitDistribution = getDeckSuitDistribution(selectedDeck);
