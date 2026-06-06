@@ -47,6 +47,12 @@ export default function SpreadDrawPage({
   console.log("Deck size:", selectedDeck.cards.length);
   console.log("Deck suit distribution:", suitDistribution);
 
+  const selectedDeck = getDeckById(searchParams.deck);
+  const suitDistribution = getDeckSuitDistribution(selectedDeck);
+
+  console.log("Deck size:", selectedDeck.cards.length);
+  console.log("Deck suit distribution:", suitDistribution);
+
   if (!spreadConfig) {
     notFound();
   }
