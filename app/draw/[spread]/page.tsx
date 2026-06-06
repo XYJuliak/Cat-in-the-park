@@ -14,6 +14,14 @@ export default function SpreadDrawPage({
 }) {
   const { spread } = params;
   const spreadConfig = SPREADS[spread as SpreadKey];
+  const selectedDeck = getDeckById(searchParams.deck);
+
+  const selectedDeck = getDeckById(searchParams.deck);
+
+  console.log(
+    "Deck size:",
+    selectedDeck.cards.length
+  );
 
   const selectedDeck = getDeckById(searchParams.deck);
   const suitDistribution = selectedDeck.cards.reduce<Record<TarotSuit, number>>(
