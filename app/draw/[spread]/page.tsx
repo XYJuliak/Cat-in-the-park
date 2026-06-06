@@ -16,7 +16,6 @@ export default function SpreadDrawPage({
   const spreadConfig = SPREADS[spread as SpreadKey];
   const selectedDeck = getDeckById(searchParams.deck);
 
-  const selectedDeck = getDeckById(searchParams.deck);
 
   console.log(
     "Deck size:",
