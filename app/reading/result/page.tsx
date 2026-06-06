@@ -1,71 +1,67 @@
 import Link from "next/link";
-import type { DrawnCard, SpreadKey } from "../../../components/draw/DrawExperience";
+import { getGuidebookEntry } from "../../../lib/guidebooks";
+import type { DrawnCard, SpreadKey } from "../../../lib/spreads";
 
 type ReportData = {
   spreadKey: SpreadKey;
   spreadName: string;
+  deckId: string;
+  deckName: string;
+  deckDescription: string;
   question: string;
   drawnCards: DrawnCard[];
 };
 
-const DEFAULT_REPORT: ReportData = {
-  spreadKey: "one-card",
-  spreadName: "One-card reading",
-  question: "What message should I focus on today?",
-  drawnCards: [
-    {
-      id: "star",
-      name: "The Star",
-      orientation: "upright",
-      positionLabel: "Primary influence",
-    },
-  ],
-};
-
-const MOCK_MEANINGS: Record<string, { upright: string; reversed: string }> = {
-  "The Star": {
-    upright: "Hope, renewal, and quiet confidence returning after uncertainty.",
-    reversed: "Temporary discouragement that asks you to reconnect with faith in your path.",
-  },
-  "The Moon": {
-    upright: "Intuition, symbols, and subtle emotions asking for careful listening.",
-    reversed: "Confusion lifting as hidden truths begin to surface.",
-  },
-  "Wheel of Fortune": {
-    upright: "Turning points, fate, and momentum moving in your favor.",
-    reversed: "Delays or cycles repeating until a lesson is integrated.",
-  },
-};
-
-function parseReport(value?: string): ReportData {
-  if (!value) return DEFAULT_REPORT;
+function parseReport(value?: string): ReportData | undefined {
+  if (!value) return undefined;
 
   try {
     const parsed = JSON.parse(value) as ReportData;
-    if (!parsed.spreadName || !Array.isArray(parsed.drawnCards)) return DEFAULT_REPORT;
+    if (!parsed.spreadName || !Array.isArray(parsed.drawnCards)) return undefined;
 
     return {
       spreadKey: parsed.spreadKey,
       spreadName: parsed.spreadName,
-      question: parsed.question || "No question provided.",
+      deckId: parsed.deckId,
+      deckName: parsed.deckName,
+      deckDescription: parsed.deckDescription,
+      question: parsed.question,
       drawnCards: parsed.drawnCards,
     };
   } catch {
-    return DEFAULT_REPORT;
+    return undefined;
   }
-}
-
-function buildAdvice(spreadName: string): string {
-  return `Move through ${spreadName.toLowerCase()} with trust—your next step is to act on the clearest truth revealed here.`;
 }
 
 export default async function ReadingResultPage({
   searchParams,
 }: {
-  searchParams: Promise<{ report?: string }>;
+  searchParams: { report?: string };
 }) {
-  const { report } = await searchParams;
+  const { report } = searchParams;
   const reportData = parseReport(report);
+
+  if (!reportData) {
+    return (
+      <main className="relative min-h-screen overflow-hidden bg-slate-950 text-amber-50">
+        <section className="relative mx-auto flex min-h-screen w-full max-w-3xl items-center px-6 py-12 sm:px-10">
+          <article className="rounded-3xl border border-amber-200/20 bg-slate-900/65 p-6 shadow-[0_20px_80px_rgba(251,191,36,0.08)] backdrop-blur-xl sm:p-10">
+            <p className="text-xs uppercase tracking-[0.2em] text-amber-200/90">Reading report</p>
+            <h1 className="mt-4 text-3xl font-semibold text-amber-100">No reading report found</h1>
+            <p className="mt-3 text-sm leading-relaxed text-slate-300/90">
+              Start a new reading to draw cards from the complete Outdoors Tarot deck.
+            </p>
+            <Link
+              href="/draw"
+              className="mt-6 inline-flex items-center rounded-xl border border-amber-300/35 bg-amber-100/10 px-5 py-3 text-sm font-medium text-amber-50 transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-200/80 hover:bg-amber-200/20"
+            >
+              Start a new reading
+            </Link>
+          </article>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-slate-950 text-amber-50">
@@ -89,7 +85,8 @@ export default async function ReadingResultPage({
             </div>
             <div className="rounded-2xl border border-amber-200/20 bg-slate-950/60 p-4">
               <p className="text-xs uppercase tracking-[0.15em] text-amber-200/80">Deck</p>
-              <p className="mt-2 text-sm text-amber-50">Mystic Arcana (mock deck)</p>
+              <p className="mt-2 text-sm text-amber-50">{reportData.deckName}</p>
+              <p className="mt-1 text-xs text-slate-300/90">{reportData.deckDescription}</p>
             </div>
           </div>
 
@@ -100,45 +97,45 @@ export default async function ReadingResultPage({
 
           <div className="mt-8 space-y-4">
             {reportData.drawnCards.map((card, index) => {
-              const meaning = MOCK_MEANINGS[card.name]?.[card.orientation] ||
-                (card.orientation === "upright"
-                  ? "Growth, insight, and forward movement are highlighted here."
-                  : "A pause invites reflection before your next meaningful move.");
+              const guidebookEntry = getGuidebookEntry(card.id);
 
               return (
                 <article
                   key={`${card.id}-${index}`}
                   className="rounded-2xl border border-amber-200/20 bg-slate-950/60 p-5 transition-all duration-300 hover:border-amber-200/70"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="text-lg font-semibold text-amber-100">{card.name}</h2>
-                    <span className="rounded-full border border-red-200/35 bg-red-900/35 px-3 py-1 text-xs uppercase tracking-wide text-red-100/90">
-                      {card.orientation}
-                    </span>
-                  </div>
+                  <h2 className="text-lg font-semibold text-amber-100">{card.name}</h2>
                   <p className="mt-2 text-xs uppercase tracking-[0.14em] text-amber-200/80">{card.positionLabel}</p>
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-xl border border-amber-200/20 bg-slate-900/60 p-3">
-                      <p className="text-xs uppercase tracking-[0.14em] text-amber-200/80">Guidebook meaning (mock)</p>
-                      <p className="mt-2 text-sm text-slate-100/90">{meaning}</p>
-                    </div>
-                    <div className="rounded-xl border border-amber-200/20 bg-slate-900/60 p-3">
-                      <p className="text-xs uppercase tracking-[0.14em] text-amber-200/80">Contextual interpretation (mock)</p>
-                      <p className="mt-2 text-sm text-slate-100/90">
-                        In the {card.positionLabel.toLowerCase()} position, {card.name} suggests this theme is closely tied
-                        to your question and asks for intentional, heart-led action.
+                  {guidebookEntry && (
+                    <div className="mt-4 rounded-xl border border-amber-200/20 bg-slate-900/60 p-3">
+                      <p className="text-xs uppercase tracking-[0.14em] text-amber-200/80">Guidebook text</p>
+                      <p className="mt-2 text-sm italic leading-relaxed text-slate-300/85">
+                        “{guidebookEntry.guidebook.text}”
                       </p>
+
+                      {guidebookEntry.guidebook.keywords && guidebookEntry.guidebook.keywords.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-[11px] uppercase tracking-[0.14em] text-amber-200/80">Keywords</p>
+                          <p className="mt-1 text-xs text-amber-100/90">
+                            {guidebookEntry.guidebook.keywords.join(" · ")}
+                          </p>
+                        </div>
+                      )}
+
+                      {guidebookEntry.guidebook.beware && guidebookEntry.guidebook.beware.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-[11px] uppercase tracking-[0.14em] text-red-200/85">Beware</p>
+                          <p className="mt-1 text-xs text-red-100/85">
+                            {guidebookEntry.guidebook.beware.join(" · ")}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
                 </article>
               );
             })}
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-amber-300/30 bg-amber-200/10 p-5">
-            <p className="text-xs uppercase tracking-[0.15em] text-amber-100">Final advice</p>
-            <p className="mt-2 text-sm text-amber-50">{buildAdvice(reportData.spreadName)}</p>
           </div>
 
           <div className="mt-8">
