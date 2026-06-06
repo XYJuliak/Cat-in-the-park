@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import type { TarotDeck } from "../../lib/decks";
+import { useEffect, useMemo, useState } from "react";
+import { getDeckSuitDistribution, type TarotDeck } from "../../lib/decks";
 import type { DrawnCard, SpreadConfig } from "../../lib/spreads";
 
 type RitualCard = DrawnCard & {
@@ -32,8 +32,14 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
   const [cards, setCards] = useState<RitualCard[]>([]);
 
   const drawnCards: DrawnCard[] = cards.map(({ revealed, tiltDeg, offsetX, offsetY, revealDelayMs, ...card }) => card);
+  const deckSuitDistribution = useMemo(() => getDeckSuitDistribution(deck), [deck]);
   const revealedCount = cards.filter((card) => card.revealed).length;
   const canContinue = cards.length > 0 && revealedCount === spread.cardCount;
+
+  useEffect(() => {
+    console.log("Deck size:", deck.cards.length);
+    console.log("Deck suit distribution:", deckSuitDistribution);
+  }, [deck.cards.length, deckSuitDistribution]);
 
   const reportPayload = useMemo(
     () =>
@@ -51,6 +57,7 @@ export default function DrawExperience({ spread, deck }: { spread: SpreadConfig;
 
   const beginRitual = () => {
     const randomized = shuffleDeck(deck.cards).slice(0, spread.cardCount);
+    console.log("Drawn card suits:", randomized.map((card) => card.suit));
     setCards(
       randomized.map((card, index) => ({
         ...card,
