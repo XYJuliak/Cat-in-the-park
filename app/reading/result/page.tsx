@@ -15,9 +15,9 @@ type ReportData = {
 const DEFAULT_REPORT: ReportData = {
   spreadKey: "one-card",
   spreadName: "One-card reading",
-  deckId: "mystic-arcana",
-  deckName: "Mystic Arcana",
-  deckDescription: "Classic major-arcana-focused deck for grounded symbolic guidance.",
+  deckId: "outdoors-tarot",
+  deckName: "Outdoors Tarot",
+  deckDescription: "A nature-rooted 78-card deck for grounded symbolic guidance.",
   question: "What message should I focus on today?",
   drawnCards: [
     {

@@ -2,13 +2,12 @@
 
 ## P0 Core Features
 
-- [ ] **Guidebook data model (mock → structured source)**
-  - Define a canonical schema for card meanings (upright/reversed), keywords, archetypes, and spread-position nuances.
-  - Move hardcoded meaning snippets from page-level code into a shared guidebook module.
-  - Add deck-aware lookup so meanings can vary by selected deck while preserving mock fallback text.
+- [x] **Complete runtime guidebook dataset**
+  - Current active guidebook coverage is 78 cards: all 22 Major Arcana and all 56 Minor Arcana.
+  - Keep approved runtime text in `lib/guidebooks/outdoors-guide.ts`; avoid reintroducing committed placeholder/sample guidebooks.
 
-- [ ] **Guidebook service layer**
-  - Add a server-safe guidebook accessor API (e.g., `lib/guidebook.ts`) to keep route/page code clean.
+- [ ] **Guidebook service layer hardening**
+  - Keep the server-safe guidebook accessor API in `lib/guidebooks/` so route/page code stays clean.
   - Validate all drawn cards against guidebook data and return deterministic fallback when missing.
 
 - [ ] **Collectible reading report domain model**

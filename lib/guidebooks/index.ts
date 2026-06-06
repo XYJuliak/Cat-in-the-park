@@ -3,11 +3,12 @@ import { OUTDOORS_GUIDEBOOK_BY_ID } from "./outdoors-guide";
 export type GuidebookEntry = {
   id: string;
   name: string;
-  number: number;
+  number?: number;
+  suit?: "vessels" | "sticks" | "stones" | "blades";
   guidebook: {
     text: string;
-    keywords: string[];
-    beware: string[];
+    keywords?: string[];
+    beware?: string[];
   };
 };
 
@@ -26,7 +27,7 @@ export function getCardMeaning(cardId: string): {
 
   if (!entry) {
     return {
-      text: "Guidebook text is not available for this card yet.",
+      text: "",
       keywords: [],
       beware: [],
     };
@@ -34,7 +35,7 @@ export function getCardMeaning(cardId: string): {
 
   return {
     text: entry.guidebook.text,
-    keywords: entry.guidebook.keywords,
-    beware: entry.guidebook.beware,
+    keywords: entry.guidebook.keywords || [],
+    beware: entry.guidebook.beware || [],
   };
 }

@@ -1,6 +1,6 @@
 # Guidebook PDF → JSON Preparation Workflow
 
-This project **does not read PDFs at runtime**. Convert each deck guidebook PDF offline into JSON files under `data/guidebooks/`.
+This project **does not read PDFs at runtime**. Convert each deck guidebook PDF offline into schema-valid JSON first, then migrate approved card text into the runtime guidebook module under `lib/guidebooks/`.
 
 ## Target format
 
@@ -16,14 +16,9 @@ Each card entry must include:
 - `reversedOriginalGuidebookText`
 - `notes` (optional)
 
-## Files to prepare for two custom decks
+## Staging files
 
-1. `data/guidebooks/<deck-one>.guidebook.json`
-2. `data/guidebooks/<deck-two>.guidebook.json`
-
-You can start from:
-- `data/guidebooks/mystic-arcana.guidebook.json` (sample data)
-- `data/guidebooks/starlight-visions.guidebook.template.json` (template)
+Use temporary local files named like `data/guidebooks/<deck>.guidebook.json` while preparing or validating an import. Do not commit placeholder sample guidebooks or partial deck templates; only commit approved runtime guidebook data and schemas.
 
 ## Conversion steps
 
@@ -32,7 +27,8 @@ You can start from:
 3. Split each card write-up into upright and reversed sections.
 4. Create concise keyword arrays for upright/reversed.
 5. Fill optional `notes` with editor remarks, caveats, or interpretation hints.
-6. Validate against `guidebook.schema.json` before committing.
+6. Validate against `guidebook.schema.json`.
+7. Move approved copy into the runtime guidebook dataset in `lib/guidebooks/` before committing.
 
 ## Mapping guidance
 
