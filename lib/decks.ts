@@ -1,8 +1,11 @@
 import { OUTDOORS_GUIDEBOOK } from "./guidebooks/outdoors-guide";
 
+export type TarotSuit = "major" | "vessels" | "sticks" | "stones" | "blades";
+
 export type TarotCard = {
   id: string;
   name: string;
+  suit: TarotSuit;
 };
 
 export type TarotDeck = {
@@ -13,9 +16,10 @@ export type TarotDeck = {
   cards: TarotCard[];
 };
 
-const OUTDOORS_TAROT_CARDS: TarotCard[] = OUTDOORS_GUIDEBOOK.map(({ id, name }) => ({
+const OUTDOORS_TAROT_CARDS: TarotCard[] = OUTDOORS_GUIDEBOOK.map(({ id, name, suit }) => ({
   id,
   name,
+  suit: suit ?? "major",
 }));
 
 export const DEFAULT_DECK: TarotDeck = {

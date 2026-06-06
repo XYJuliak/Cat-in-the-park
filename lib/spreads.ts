@@ -1,3 +1,5 @@
+import type { TarotSuit } from "./decks";
+
 export type SpreadKey = "one-card" | "three-card" | "celtic-cross";
 
 export type SpreadConfig = {
@@ -10,6 +12,7 @@ export type SpreadConfig = {
 export type DrawnCard = {
   id: string;
   name: string;
+  suit?: TarotSuit;
   orientation: "upright" | "reversed";
   positionLabel: string;
 };

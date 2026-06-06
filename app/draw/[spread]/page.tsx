@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import DrawExperience from "../../../components/draw/DrawExperience";
-import { getDeckById } from "../../../lib/decks";
+import { getDeckById, type TarotSuit } from "../../../lib/decks";
 import { SPREADS } from "../../../lib/spreads";
 
 type SpreadKey = keyof typeof SPREADS;
@@ -22,6 +22,24 @@ export default function SpreadDrawPage({
     "Deck size:",
     selectedDeck.cards.length
   );
+
+  const selectedDeck = getDeckById(searchParams.deck);
+  const suitDistribution = selectedDeck.cards.reduce<Record<TarotSuit, number>>(
+    (counts, card) => ({
+      ...counts,
+      [card.suit]: counts[card.suit] + 1,
+    }),
+    {
+      major: 0,
+      vessels: 0,
+      sticks: 0,
+      stones: 0,
+      blades: 0,
+    }
+  );
+
+  console.log("Deck size:", selectedDeck.cards.length);
+  console.log("Deck suit distribution:", suitDistribution);
 
   if (!spreadConfig) {
     notFound();
