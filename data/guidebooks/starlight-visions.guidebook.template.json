@@ -1,0 +1,18 @@
+{
+  "deckId": "starlight-visions",
+  "deckName": "Starlight Visions",
+  "version": "1.0.0",
+  "source": "template",
+  "cards": [
+    {
+      "deckId": "starlight-visions",
+      "cardId": "example-card-id",
+      "cardName": "Example Card Name",
+      "uprightKeywords": ["keyword-one", "keyword-two"],
+      "uprightOriginalGuidebookText": "Paste extracted upright guidebook text here.",
+      "reversedKeywords": ["keyword-three", "keyword-four"],
+      "reversedOriginalGuidebookText": "Paste extracted reversed guidebook text here.",
+      "notes": "Optional interpretation notes for internal use."
+    }
+  ]
+}
